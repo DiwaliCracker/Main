@@ -1009,17 +1009,30 @@ body {
       });
 
       // Mobile
-      anchor.addEventListener("touchstart", (e) => {
-        isTouch = true;
-        e.preventDefault();
-        if (overlay.childNodes.length === 0) {
-          showOverlay();
-          posterWrapper.classList.add("touch-active");
-        } else {
-          hideOverlay();
-          posterWrapper.classList.remove("touch-active");
-        }
-      });
+     let touchStartTime = 0;
+
+anchor.addEventListener("touchstart", (e) => {
+  isTouch = true;
+  touchStartTime = Date.now();
+});
+
+anchor.addEventListener("touchend", (e) => {
+  const tapDuration = Date.now() - touchStartTime;
+
+  // Short tap (like a click) - toggle video/iframe overlay
+  if (tapDuration < 300) {
+    e.preventDefault(); // prevent link only for toggling
+    if (overlay.childNodes.length === 0) {
+      showOverlay();
+      posterWrapper.classList.add("touch-active");
+    } else {
+      hideOverlay();
+      posterWrapper.classList.remove("touch-active");
+    }
+  }
+  // Else allow scroll & anchor to work
+});
+
 
       const overlay2 = document.createElement("div");
       overlay2.classList.add("overlay2");
