@@ -1019,34 +1019,37 @@ anchor.addEventListener("touchstart", (e) => {
 anchor.addEventListener("touchend", (e) => {
   const tapDuration = Date.now() - touchStartTime;
 
-  // Short tap (like a click) - toggle video/iframe overlay
   if (tapDuration < 300) {
-  e.preventDefault();
+    if (!posterWrapper.classList.contains("touch-active")) {
+      // First tap: show video, prevent navigation
+      e.preventDefault();
 
-  // Stop all other videos
-  document.querySelectorAll('.poster-wrapper.touch-active').forEach(wrapper => {
-    if (wrapper !== posterWrapper) {
-      wrapper.classList.remove("touch-active");
-      const otherOverlay = wrapper.querySelector(".overlay");
-      const otherVideo = otherOverlay.querySelector("video");
-      if (otherVideo) {
-        otherVideo.pause();
-        otherVideo.src = "";
-        otherVideo.load();
-      }
-      otherOverlay.innerHTML = "";
-      otherOverlay.style.display = "none";
+      // Close other active posters
+      document.querySelectorAll('.poster-wrapper.touch-active').forEach(wrapper => {
+        if (wrapper !== posterWrapper) {
+          wrapper.classList.remove("touch-active");
+          const otherOverlay = wrapper.querySelector(".overlay");
+          const otherVideo = otherOverlay.querySelector("video");
+          if (otherVideo) {
+            otherVideo.pause();
+            otherVideo.src = "";
+            otherVideo.load();
+          }
+          otherOverlay.innerHTML = "";
+          otherOverlay.style.display = "none";
+        }
+      });
+
+      // Activate current poster
+      showOverlay();
+      posterWrapper.classList.add("touch-active");
+    } else {
+      // Second tap: allow navigation (default behavior)
+      // Do not prevent default here
     }
-  });
-
-  if (overlay.childNodes.length === 0) {
-    showOverlay();
-    posterWrapper.classList.add("touch-active");
-  } else {
-    hideOverlay();
-    posterWrapper.classList.remove("touch-active");
   }
-}
+
+
 
   // Else allow scroll & anchor to work
 });
