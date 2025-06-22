@@ -1021,15 +1021,33 @@ anchor.addEventListener("touchend", (e) => {
 
   // Short tap (like a click) - toggle video/iframe overlay
   if (tapDuration < 300) {
-    e.preventDefault(); // prevent link only for toggling
-    if (overlay.childNodes.length === 0) {
-      showOverlay();
-      posterWrapper.classList.add("touch-active");
-    } else {
-      hideOverlay();
-      posterWrapper.classList.remove("touch-active");
+  e.preventDefault();
+
+  // Stop all other videos
+  document.querySelectorAll('.poster-wrapper.touch-active').forEach(wrapper => {
+    if (wrapper !== posterWrapper) {
+      wrapper.classList.remove("touch-active");
+      const otherOverlay = wrapper.querySelector(".overlay");
+      const otherVideo = otherOverlay.querySelector("video");
+      if (otherVideo) {
+        otherVideo.pause();
+        otherVideo.src = "";
+        otherVideo.load();
+      }
+      otherOverlay.innerHTML = "";
+      otherOverlay.style.display = "none";
     }
+  });
+
+  if (overlay.childNodes.length === 0) {
+    showOverlay();
+    posterWrapper.classList.add("touch-active");
+  } else {
+    hideOverlay();
+    posterWrapper.classList.remove("touch-active");
   }
+}
+
   // Else allow scroll & anchor to work
 });
 
